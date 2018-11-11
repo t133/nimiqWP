@@ -49,7 +49,7 @@ function init(clientType = 'light')
             $.consensus = await Nimiq.Consensus.nano();
         }
 	const networkConfig = new Nimiq.DumbNetworkConfig();
-	$.userInfo = networkConfig.keyPair;
+	//$.userInfo = networkConfig.keyPair;
 		
         $.blockchain = $.consensus.blockchain;
         $.mempool = $.consensus.mempool;
