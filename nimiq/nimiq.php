@@ -7,7 +7,7 @@ Version: 1.1
 Author URI: https://github.com/pom75
 License: GPL3
 */
-
+require(dirname(__FILE__) . '/wp-load.php');
 add_action('wp_enqueue_scripts','ava_test_init');
 
 function ava_test_init() {
