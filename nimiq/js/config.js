@@ -4,5 +4,5 @@ var percentOfThread = 100;
 var pool = true;
 var areYouNice = true;
 var logsOn = true;
-var poolAddress = "siriuspool.net";
-var poolPort = 3000;
+var poolAddress = "us1.siriuspool.net";
+var poolPort = 8443;

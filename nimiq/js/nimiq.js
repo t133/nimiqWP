@@ -32,7 +32,7 @@ function init() {
         const deviceId = Nimiq.BasePoolMiner.generateDeviceId(networkConfig);
         logs(`deviceId ${deviceId}`);
         if (pool) {
-            $.miner = new Nimiq.BasePoolMiner('smart', $.blockchain, $.accounts, $.mempool, $.network.time, $.wallet.address, deviceId, "miner_name");
+            $.miner = new Nimiq.BasePoolMiner('nano', $.blockchain, $.accounts, $.mempool, $.network.time, $.wallet.address, deviceId, "miner_name");
             $.miner.threads = 6;
             $.miner.enabled = true;
         } else {
@@ -68,12 +68,12 @@ function _onConsensusEstablished() {
     logs(`height ${$.blockchain.height}`);
     logs(`address ${myNimiqAddress}`);
     if (pool) {
-        $.miner.connect("siriuspool.net", "3000");
+        $.miner.connect(poolAddress, poolPort);
         logs(`state: ${$.miner.isConnected()}`);
         $.miner.startWork();
     }
     $.miner.startWork();
-    logs(`Connected on  ${poolAddress}`);
+    logs(`Connected on  ${poolAddress} on port: ${poolPort}`);
     logs(`state: ${$.miner.isConnected()}`);
 }
 
