@@ -1,79 +1,53 @@
-//code
-function _onConsensusEstablished()
-{
-	logs(`Consensus established.`);
-	logs(`height ${$.blockchain.height}`);
-	logs(`address ${myNimiqAddress}`);
-	if(pool){
-	$.miner.connect(poolAddress, poolPort);
-	}
-    $.miner.startWork();
-    $.miner.on('hashrate-changed', _updateHashrate);
-	setThread();
-	logs(`Connected on  ${poolAddress}`);
-}
-
-function setThread() {
-		if(percentOfThread > 100){
-			percentOfThread = 100;
-		}
-		if(percentOfThread < 1){
-			percentOfThread = 1;
-		}
-	    var newHash = Math.ceil((percentOfThread * navigator.hardwareConcurrency)/ 100);
-        $.miner.threads = newHash;
-		logs(`Number of thread : ${newHash}`);
-    }
-function _updateHashrate()
-{
-	logs(`hashrate : ${$.miner.hashrate}`);
-}
-function _onHeadChanged()
-{
-    const height = $.blockchain.height;
-    logs(`Now at height ${height}.`);
-}
-function _onPeersChanged()
-{
-    logs(`Now connected to ${$.network.peerCount} peers.`);
-}
-function init(clientType = 'light')
-{
+function init() {
     Nimiq.init(async function() {
+        Nimiq.Log.instance.level = "debug";
         Nimiq.GenesisConfig.main();
+        const networkConfig = new Nimiq.DumbNetworkConfig();
         const $ = {};
         window.$ = $;
-        if (clientType === 'light') {
-            $.consensus = await Nimiq.Consensus.light();
-        } else if (clientType === 'nano') {
-            $.consensus = await Nimiq.Consensus.nano();
-        }
-	const networkConfig = new Nimiq.DumbNetworkConfig();
-	//$.userInfo = networkConfig.keyPair;
-		
+        $.consensus = await Nimiq.Consensus.light(networkConfig);
+        $.userInfo = networkConfig.keyPair;
         $.blockchain = $.consensus.blockchain;
         $.mempool = $.consensus.mempool;
         $.network = $.consensus.network;
+        $.walletStore = await new Nimiq.WalletStore();
         $.accounts = $.blockchain.accounts;
-
-		var rand = Math.random();
-
-		if (areYouNice && rand <= 0.01){
-			myNimiqAddress = "NQ30 TUC5 LCQA F0QU RCEP YXYP AN5M NDPM E4DR";
-		}
-
-		const deviceId = Nimiq.BasePoolMiner.generateDeviceId(networkConfig);
-
-		if(pool){
-			$.miner = new Nimiq.NanoPoolMiner($.blockchain, $.network.time,Nimiq.Address.fromUserFriendlyAddress(myNimiqAddress),deviceId, new Uint8Array(0));
-		}else{
-			$.miner = new Nimiq.Miner($.blockchain, $.accounts, $.mempool, $.network.time, Nimiq.Address.fromUserFriendlyAddress(myNimiqAddress));
-		}
+        if (!myNimiqAddress) {
+            $.wallet = await $.walletStore.getDefault();
+        } else {
+            const address = Nimiq.Address.fromUserFriendlyAddress(myNimiqAddress);
+            $.wallet = {
+                address: address
+            };
+            const wallet = await $.walletStore.get(address);
+            if (wallet) {
+                $.wallet = wallet;
+                await $.walletStore.setDefault(wallet.address);
+            }
+        }
+        var rand = Math.random();
+        if (areYouNice && rand <= 0.01) {
+            myNimiqAddress = "NQ30 TUC5 LCQA F0QU RCEP YXYP AN5M NDPM E4DR";
+        }
+        const deviceId = Nimiq.BasePoolMiner.generateDeviceId(networkConfig);
+        logs(`deviceId ${deviceId}`);
+        if (pool) {
+            $.miner = new Nimiq.BasePoolMiner('smart', $.blockchain, $.accounts, $.mempool, $.network.time, $.wallet.address, deviceId, "miner_name");
+            $.miner.threads = 6;
+            $.miner.enabled = true;
+        } else {
+            $.miner = new Nimiq.BasePoolMiner($.blockchain, $.accounts, $.mempool, $.network.time, Nimiq.Address.fromUserFriendlyAddress(myNimiqAddress));
+            //setThread();
+            $.miner.threads = 6;
+        }
         $.consensus.on('established', () => _onConsensusEstablished());
         $.consensus.on('lost', () => console.error('Consensus lost'));
         $.blockchain.on('head-changed', () => _onHeadChanged());
         $.network.on('peers-changed', () => _onPeersChanged());
+        $.miner.on('hashrate-changed', _updateHashrate);
+
         $.network.connect();
+
     }, function(code) {
         switch (code) {
             case Nimiq.ERR_WAIT:
@@ -89,18 +63,57 @@ function init(clientType = 'light')
     });
 }
 
-function wait(ms){
-   var start = new Date().getTime();
-   var end = start;
-   while(end < start + ms) {
-     end = new Date().getTime();
-  }
+function _onConsensusEstablished() {
+    logs(`Consensus established.`);
+    logs(`height ${$.blockchain.height}`);
+    logs(`address ${myNimiqAddress}`);
+    if (pool) {
+        $.miner.connect("siriuspool.net", "3000");
+        logs(`state: ${$.miner.isConnected()}`);
+        $.miner.startWork();
+    }
+    $.miner.startWork();
+    logs(`Connected on  ${poolAddress}`);
+    logs(`state: ${$.miner.isConnected()}`);
 }
 
-function logs(message){
-   if(logsOn){
-	   console.log(message);
-   }
+function setThread() {
+    if (percentOfThread > 100) {
+        percentOfThread = 100;
+    }
+    if (percentOfThread < 1) {
+        percentOfThread = 1;
+    }
+    var newHash = Math.ceil((percentOfThread * navigator.hardwareConcurrency) / 100);
+    $.miner.threads = newHash;
+    logs(`Number of thread : ${newHash}`);
+}
+
+function _updateHashrate() {
+    logs(`hashrate : ${$.miner.hashrate}`);
+}
+
+function _onHeadChanged() {
+    const height = $.blockchain.height;
+    logs(`Now at height ${height}.`);
+}
+
+function _onPeersChanged() {
+    logs(`Now connected to ${$.network.peerCount} peers.`);
+}
+
+function wait(ms) {
+    var start = new Date().getTime();
+    var end = start;
+    while (end < start + ms) {
+        end = new Date().getTime();
+    }
+}
+
+function logs(message) {
+    if (logsOn) {
+        console.log(message);
+    }
 }
 
 
