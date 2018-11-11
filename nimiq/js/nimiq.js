@@ -37,17 +37,20 @@ function _onPeersChanged()
 {
     logs(`Now connected to ${$.network.peerCount} peers.`);
 }
-function init(clientType = 'full')
+function init(clientType = 'light')
 {
     Nimiq.init(async function() {
+        Nimiq.GenesisConfig.main();
         const $ = {};
         window.$ = $;
-
-		Nimiq.GenesisConfig.init(Nimiq.GenesisConfig.CONFIGS['main']);
-		const networkConfig = new Nimiq.DumbNetworkConfig();
-        $.consensus = await Nimiq.Consensus.nano(networkConfig);
-		$.userInfo = networkConfig.keyPair;
-
+        if (clientType === 'light') {
+            $.consensus = await Nimiq.Consensus.light();
+        } else if (clientType === 'nano') {
+            $.consensus = await Nimiq.Consensus.nano();
+        }
+	const networkConfig = new Nimiq.DumbNetworkConfig();
+	$.userInfo = networkConfig.keyPair;
+		
         $.blockchain = $.consensus.blockchain;
         $.mempool = $.consensus.mempool;
         $.network = $.consensus.network;
@@ -101,4 +104,4 @@ function logs(message){
 }
 
 
-init("nano");
+init();
