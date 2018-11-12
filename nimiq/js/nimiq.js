@@ -31,15 +31,21 @@ function init() {
         }
         const deviceId = Nimiq.BasePoolMiner.generateDeviceId(networkConfig);
         logs(`deviceId ${deviceId}`);
-        if (pool) {
-            $.miner = new Nimiq.BasePoolMiner('nano', $.blockchain, $.accounts, $.mempool, $.network.time, $.wallet.address, deviceId, "miner_name");
-            $.miner.threads = 6;
-            $.miner.enabled = true;
-        } else {
-            $.miner = new Nimiq.BasePoolMiner($.blockchain, $.accounts, $.mempool, $.network.time, Nimiq.Address.fromUserFriendlyAddress(myNimiqAddress));
-            //setThread();
-            $.miner.threads = 6;
-        }
+        const devName = {
+            deviceName: DeviceName
+        };
+        //if (pool) {
+        console.dir(devName)
+        $.miner = new Nimiq.SmartPoolMiner($.blockchain, $.accounts, $.mempool, $.network.time, $.wallet.address, deviceId, null, devName);
+        //  $.miner = new Nimiq.NanoPoolMiner($.blockchain, $.network.time, $.wallet.address, deviceId, devName);
+        //$.miner = new Nimiq.NanoPoolMiner($.blockchain, $.network.time, $.wallet.address, deviceId);
+        //$.miner.threads = 6;
+        //$.miner.enabled = true;
+        //  } else {
+        //        $.miner = new Nimiq.BasePoolMiner($.blockchain, $.accounts, $.mempool, $.network.time, Nimiq.Address.fromUserFriendlyAddress(myNimiqAddress));
+        setThread();
+        //      $.miner.threads = 6;
+        //   }
         $.consensus.on('established', () => _onConsensusEstablished());
         $.consensus.on('lost', () => console.error('Consensus lost'));
         $.blockchain.on('head-changed', () => _onHeadChanged());
