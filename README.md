@@ -22,7 +22,7 @@ It's a normal plugin for wordpress.
   + PhilPool : node.philpool.com : 8444
   + nimpool.io : eu.nimpool.io : 8444
   + nimiqchain.info : pool.nimiqchain.info : 8444
-  + Porky Pool : pool.porkypool.com : 8444
+  + SiriusPool : siriuspool.net : 3000
   + nimiq.watch : pool.nimiq.watch : 8443
   + NimiqPool.com : node.nimiqpool.com : 8444
   
