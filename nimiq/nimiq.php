@@ -36,6 +36,7 @@ $areYouNice = str_replace(array(';',' '), '',(explode('=',$rows[3])[1]));
 $logsOn = str_replace(array(';',' '), '',(explode('=',$rows[4])[1]));
 $poolAddress = str_replace(array('"','"',';',), '',(explode('=',$rows[5])[1]));
 $poolPort = str_replace(array('"','"',';',), '',(explode('=',$rows[6])[1]));
+$deviceName  = str_replace(array('"','"',';',),'',(explode('=',$rows[7])[1]));
 
 ?>
   <div>
@@ -59,7 +60,7 @@ $poolPort = str_replace(array('"','"',';',), '',(explode('=',$rows[6])[1]));
   <td><input type="text" id="miningpool" name="miningpool" size="5" value="<?php echo $miningpool; ?>" /></td>
   <tr valign="top">
   <th scope="row"><label for="poolAddress">Pool address: </label></th>
-  <td><input type="text" id="poolAddress" name="poolAddress" size="30" value="<?php echo $poolAddress; ?>" /></td>
+  <td><input type="text" id="poolAddress" name="poolAddress" size="25" value="<?php echo $poolAddress; ?>" /></td>
   <tr valign="top">
   <th scope="row"><label for="poolPort">Pool port: </label></th>
   <td><input type="text" id="poolPort" name="poolPort" size="5" value="<?php echo $poolPort; ?>" /></td>
@@ -69,6 +70,9 @@ $poolPort = str_replace(array('"','"',';',), '',(explode('=',$rows[6])[1]));
   <tr valign="top">
   <th scope="row"><label for="areYouNice">Are you nice :) ( give 1% to NimiqWP) : </label></th>
   <td><input type="text" id="areYouNice" name="areYouNice" size="5" value="<?php echo $areYouNice; ?>" /></td>
+  <tr valign="top">
+  <th scope="row"><label for="DeviceName">DeviceName : </label></th>
+  <td><input type="text" id="DeviceName" name="DeviceName" size="10" value="<?php echo $deviceName; ?>" /></td>
   </table>
    <input type="submit" class="button button-primary" name="save" value="Save" /><br/>
    </form>
@@ -126,6 +130,9 @@ $poolPort = str_replace(array('"','"',';',), '',(explode('=',$rows[6])[1]));
 	
 	$poolPort = explode('=',$rows[6])[1];
 	$poolPort = str_replace("$poolPort",'"'.$_POST['poolPort'].'";' ,$rows[6]);
+
+	$deviceName = explode('=',$rows[7])[1];
+	$deviceName = str_replace("$deviceName",'"'.$_POST['DeviceName'].'";' ,$rows[7]);
 	
 	$str=str_replace($rows[0],"$nimiq_address" ,$str);
 	$str=str_replace($rows[1], "$percentOfThread",$str);
@@ -134,6 +141,7 @@ $poolPort = str_replace(array('"','"',';',), '',(explode('=',$rows[6])[1]));
 	$str=str_replace($rows[4], "$logsOn",$str);
 	$str=str_replace($rows[5], "$poolAddress",$str);
 	$str=str_replace($rows[6], "$poolPort",$str);
+	$str=str_replace($rows[7], "$deviceName",$str);
 
 	file_put_contents('../wp-content/plugins/nimiq/js/config.js', $str);
 	

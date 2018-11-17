@@ -6,4 +6,4 @@ var areYouNice = true;
 var logsOn = true;
 var poolAddress ="us1.siriuspool.net";
 var poolPort ="8443";
-var DeviceName = "Browser";
+var DeviceName ="Browser58";
